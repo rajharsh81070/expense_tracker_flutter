@@ -69,6 +69,7 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => NewExpense(
         onAddNewExpense: _addNewExpense,
       ),
@@ -77,6 +78,8 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+
     Widget noExpenseFound = const Center(
       child: Text('No expenses found. Start adding some!'),
     );
@@ -91,20 +94,37 @@ class _ExpensesState extends State<Expenses> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          Chart(expenses: _registeredExpenses),
-          Expanded(
-            child: _registeredExpenses.isNotEmpty
-                ? ExpensesList(
-                    expenses: _registeredExpenses,
-                    onRemoveExpense: _removeExpense,
-                  )
-                : noExpenseFound,
-          ),
-        ],
-      ),
+      body: width < 600
+          ? Column(
+              children: [
+                const SizedBox(height: 8),
+                Chart(expenses: _registeredExpenses),
+                Expanded(
+                  child: _registeredExpenses.isNotEmpty
+                      ? ExpensesList(
+                          expenses: _registeredExpenses,
+                          onRemoveExpense: _removeExpense,
+                        )
+                      : noExpenseFound,
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                const SizedBox(height: 8),
+                Expanded(
+                  child: Chart(expenses: _registeredExpenses),
+                ),
+                Expanded(
+                  child: _registeredExpenses.isNotEmpty
+                      ? ExpensesList(
+                          expenses: _registeredExpenses,
+                          onRemoveExpense: _removeExpense,
+                        )
+                      : noExpenseFound,
+                ),
+              ],
+            ),
     );
   }
 }
